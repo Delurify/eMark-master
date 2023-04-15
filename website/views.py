@@ -107,10 +107,14 @@ def apply_watermark(raw_image, name, watermark_text):
 def watermark():
     if request.method == 'POST':
         pic = request.files['image']
-        watermark_text = "Digital Watermark"
-
+        watermark_text = request.form.get('text')
+        
+            
         if not pic:
-            return "no pic uploaded", 404
+            return flash('no pic uploaded', category='error')
+        if not watermark_text:
+            return flash('no text entered', category='error')
+        
 
         filename = secure_filename(pic.filename)
         mimetype = pic.mimetype

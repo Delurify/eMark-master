@@ -1,68 +1,74 @@
-<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
-
+<script
+  src="https://code.jquery.com/jquery-3.6.4.min.js"
+  integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
+  crossorigin="anonymous"
+></script>
 
 <script>
-    const loadFile = function(event) {
-        const reader = new FileReader();
-        const img_div = document.getElementById("output");
-        reader.onload = function(){
-            const output = document.getElementById('output');
-            output.src = reader.result;
-            img_div.removeAttribute("hidden");
-        };
-        reader.readAsDataURL(event.target.files[0]);
+  const loadFile = function (event) {
+    const reader = new FileReader();
+    const img_div = document.getElementById("output");
+    reader.onload = function () {
+      const output = document.getElementById("output");
+      output.src = reader.result;
+      img_div.removeAttribute("hidden");
+      document.getElementById("edit_option").removeAttribute("hidden");
     };
+    reader.readAsDataURL(event.target.files[0]);
+  };
 </script>
 
-<script>
-    $(document).ready(function(){
-        $("form").submit(function(){
-            event.preventDefault();
-            document.getElementById("edit_option").style.display="block";
-        });
-    });
-</script>
+{%extends "base.html" %} {%block title %}Home{% endblock %} {% block content %}
+<h1 align="center">Watermark</h1>
+{#
+<div align="center" id="konva-holder"></div>
+#}
+<br />
 
-{%extends "base.html" %}
-{%block title %}Home{% endblock %}
+{% if image %}
+<div align="center">
+  <img style="height: 50vh" src="{{ image }}" />
+</div>
+{% endif %}
+<div align="center">
+  <img hidden id="output" style="height: 50vh" src="{{ image }}" />
+</div>
 
+<br />
 
-{% block content %}
-    <h1 align="center">Watermark</h1>
-    {#<div align="center" id="konva-holder"></div>#}
-    <br />
+<form
+  method="POST"
+  enctype="multipart/form-data"
+  align="center"
+  action="/watermark"
+>
+  <input
+    type="file"
+    id="image_input"
+    name="image"
+    accept="image/*"
+    onchange="loadFile(event)"
+  />
+  <input type="submit" id="upload-image" value="Upload" />
+</form>
 
-    {% if image %}
-        <div align="center" >
-            <img style="height: 50vh" src="{{ image }}"/>
-        </div>
-    {% endif %}
-    <div align="center" >
-        <img hidden id="output" style="height: 50vh" src="{{ image }}"/>
-    </div>
+<form action="/apply_watermark" method="POST">
+  <div hidden id="edit_option" align="center">
+    <select id="fontFamily">
+      <option value="Arial.ttf">Arial</option>
+      <option value="times-new-roman.ttf">Times New Roman</option>
+    </select>
 
-    <br />
+    <input type="text" id="text" placeholder="text" value="Watermark" />
 
-    <form method="POST" enctype="multipart/form-data" align="center" action="/watermark">
-        <input type="file" id="image_input" name="image" accept="image/*" onchange="loadFile(event)">
-        <input type="submit" id="upload-image" value="Upload">
-    </form>
-    
-    <div id="edit_option" style="display: none;" align="center">
-        <select id="fontFamily">
-            <option value="Arial.ttf">Arial</option>
-            <option value="times-new-roman.ttf">Times New Roman</option>
-        </select>
-
-        <input type="text" id="fontSize">
-        <select id="placement">
-            <option value="canter">Center</option>
-            <option value="top-left">Top-Left</option>
-            <option value="top-right">Top-Right</option>
-            <option value="bottom-left">Bottom Left</option>
-            <option value="bottom-right">Bottom Right</option>
-        </select>
-    </div>
-
+    <select id="placement">
+      <option value="center">Center</option>
+      <option value="top-left">Top-Left</option>
+      <option value="top-right">Top-Right</option>
+      <option value="bottom-left">Bottom Left</option>
+      <option value="bottom-right">Bottom Right</option>
+    </select>
+  </div>
+</form>
 
 {% endblock %}
