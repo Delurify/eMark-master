@@ -1,0 +1,66 @@
+<script>
+  $(document).ready(function () {
+    $("form").submit(function (event) {
+      event.preventDefault();
+      var input = document.getElementById("image_canvas");
+      var file = input.files[0];
+      var reader = new FileReader();
+      reader.onload = function () {
+        const aspectRatio = imageObj.width / imageObj.height;
+        var imageHeight = imageObj.height;
+        var imageWidth = imageObj.width;
+
+        if (imageObj.height > stageHeight || imageObj.width > stageWidth) {
+          if (aspectRatio > 1) {
+            // image is wider than tall
+            imageWidth = stageWidth;
+            imageHeight = imageWidth / aspectRatio;
+          } else {
+            // image is taller than wide
+            imageHeight = stageHeight;
+            imageWidth = imageHeight * aspectRatio;
+          }
+        }
+
+        var imageObj = new Image();
+        imageObj.onload = function () {
+          var image = new Konva.Image({
+            x: 0,
+            y: 0,
+            image: imageObj,
+            width: imageWidth * 0.8,
+            height: imageHeight * 0.8,
+          });
+          layer.add(image);
+        };
+        imageObj.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+</script>
+
+{%extends "base.html" %} {%block title %}Canvas{% endblock %} {% block content
+%}
+<h1 align="center">Canvas</h1>
+<!-- <div align=center><canvas id="paint" width="750" height="450" style="border: 5px solid #000000;">Update your browser to support HTML5 Canvas</canvas>
+</div> -->
+<div align="center" id="konva-holder"></div>
+<br />
+<div align="center">
+  <button id="rectangletool" type="button" class="btn btn-info">
+    Rectangle
+  </button>
+  <button id="circletool" type="button" class="btn btn-info">Circle</button>
+
+  <form
+    method="POST"
+    enctype="multipart/form-data"
+    align="center"
+    action="/canvas"
+  >
+    <input type="file" id="image_canvas" name="image" accept="image/*" />
+    <input type="submit" id="insert_canvas" value="Upload" />
+  </form>
+</div>
+{% endblock %}
