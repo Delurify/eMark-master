@@ -69,7 +69,7 @@ def canvas():
     return render_template("canvas.html", user=current_user)
 
 
-def apply_watermark(raw_image, name, watermark_text):
+def apply_watermark(raw_image, name, watermark_text, fontType, placement, color):
     # Guard clause to handle the error
     # Ref: https://subscription.packtpub.com/book/programming/9781788293181/6/06lvl1sec66/guard-clauses
     if (not raw_image) or not (allowed_file(name)):
@@ -79,7 +79,7 @@ def apply_watermark(raw_image, name, watermark_text):
     image_with_text = Image.new('RGBA', original_image.size, (255, 255, 255, 0))
 
     # Creating text and font object
-    font = ImageFont.truetype(str(Path('website/font/Arial.ttf')), 82)
+    font = ImageFont.truetype(str(Path('website/font/' + fontType)), 82)
 
     # Creating draw object
     draw = ImageDraw.Draw(image_with_text)
@@ -87,8 +87,22 @@ def apply_watermark(raw_image, name, watermark_text):
     # Positioning Text
     text_width, text_height = draw.textsize(watermark_text, font)
     width, height = original_image.size
-    x = width / 2 - text_width / 2
-    y = height - text_height - 300
+    if placement == "center":
+        x = width / 2 - text_width / 2
+        y = height - text_height / 2
+    elif placement == "top-left":
+        x = 0
+        y = 0
+    elif placement == "top-right":
+        x = width - text_width
+        y = 0
+    elif placement == "bottom-left":
+        x = 0
+        y = height - text_height
+    else:
+        x = width - text_width
+        y = height - text_height        
+    
 
     # Applying Text
     draw.text((x, y), watermark_text, fill=(255, 255, 255, 125), font=font)
@@ -107,13 +121,17 @@ def apply_watermark(raw_image, name, watermark_text):
 def watermark():
     if request.method == 'POST':
         pic = request.files['image']
-        watermark_text = request.form.get('text')
-        
+        watermark_text = request.form.get('watermark_text')
+        fontType = request.form.get('fontFamily')
+        placement = request.form.get('placement')
+        color = request.form.get("colorpicker")
             
         if not pic:
-            return flash('no pic uploaded', category='error')
-        if not watermark_text:
-            return flash('no text entered', category='error')
+            flash('no pic uploaded', category='error')
+            return render_template("watermark.html", user=current_user)
+        if len(watermark_text) < 1:
+            flash('no text entered', category='error')
+            return render_template("watermark.html", user=current_user)
         
 
         filename = secure_filename(pic.filename)
@@ -123,7 +141,7 @@ def watermark():
             flash('Image already exist.', category='error')
         else:
             img = Imge(image=pic.read(), mimetype=mimetype, name=filename)
-            watermarked_file = apply_watermark(pic, filename, watermark_text)
+            watermarked_file = apply_watermark(pic, filename, watermark_text, fontType, placement, color)
 
             db.session.add(img)
             db.session.commit()
