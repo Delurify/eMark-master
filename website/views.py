@@ -1,8 +1,9 @@
 import json
+import os
 from pathlib import Path
 
 from PIL import Image
-from PIL import ImageFont, ImageDraw
+from PIL import ImageFont, ImageDraw, ImageColor
 from flask import Blueprint, Flask, render_template, flash, request, jsonify, redirect, url_for, Response
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
@@ -58,15 +59,18 @@ def canvas():
     if request.method == "GET":
         return render_template("canvas.html", user=current_user)
     if request.method == "POST":
-        # filename = request.form['save_fname']
-        # data = request.form['save_cdata']
-        # new_cert = Project(projName=filename, data=data, canvas_image=canvas_image, user_id=current_user.id)
-        # db.session.add(new_cert)
-        # db.session.commit()
-        flash('Project added!', category='success')
+        pic = request.files['image']
+        filename = "website/static/image/watermarked.jpg"
+
+        check = os.path.exists(filename)
+        if check:
+            os.remove(filename)
+
+        # Saving the image
+        pic.save(Path(filename))    
 
     # return redirect(url_for('views.canvas'))
-    return render_template("canvas.html", user=current_user)
+    return render_template("canvas.html", user=current_user, image=Path(f"static/image/{pic}"))
 
 
 def apply_watermark(raw_image, name, watermark_text, fontType, placement, color):
@@ -78,18 +82,34 @@ def apply_watermark(raw_image, name, watermark_text, fontType, placement, color)
     original_image = Image.open(raw_image).convert("RGBA")
     image_with_text = Image.new('RGBA', original_image.size, (255, 255, 255, 0))
 
-    # Creating text and font object
-    font = ImageFont.truetype(str(Path('website/font/' + fontType)), 82)
-
     # Creating draw object
     draw = ImageDraw.Draw(image_with_text)
+
+    # Adjusing Font Size Corresponding to Image Size
+    fontSize = 1
+    
+    # Portion of image width that you want the text width to be
+    img_fraction = 0.50
+
+    # Creating TestFont object
+    testFont = ImageFont.truetype(str(Path('website/font/Arial.ttf')), fontSize)
+
+    text_width, text_height = draw.textsize(watermark_text, testFont)
+
+    while int(testFont.getsize(watermark_text)[0]) < img_fraction*original_image.size[0]:
+        # iterate until the text size is just larger than the criteria
+        fontSize += 1
+        testFont = ImageFont.truetype(str(Path('website/font/Arial.ttf')), fontSize)
+
+    # Creating text and font object
+    font = ImageFont.truetype(str(Path('website/font/' + fontType)), fontSize)
 
     # Positioning Text
     text_width, text_height = draw.textsize(watermark_text, font)
     width, height = original_image.size
     if placement == "center":
-        x = width / 2 - text_width / 2
-        y = height - text_height / 2
+        x = (width-text_width) / 2
+        y = (height-text_height) / 2
     elif placement == "top-left":
         x = 0
         y = 0
@@ -103,9 +123,12 @@ def apply_watermark(raw_image, name, watermark_text, fontType, placement, color)
         x = width - text_width
         y = height - text_height        
     
+    # Get the font color
+    rgbColor = ImageColor.getrgb(color)
+    rgbaColor = tuple(list(rgbColor) + [128])  # add alpha value of 128 (semi-transparent)
 
     # Applying Text
-    draw.text((x, y), watermark_text, fill=(255, 255, 255, 125), font=font)
+    draw.text((x, y), watermark_text, fill=rgbaColor, font=font)
 
     # Saving the new image
     watermarked = Image.alpha_composite(original_image, image_with_text)
@@ -136,18 +159,16 @@ def watermark():
 
         filename = secure_filename(pic.filename)
         mimetype = pic.mimetype
-        check = Imge.query.filter_by(name=filename).first()
+        check = os.path.exists("website/static/image/" + filename + "-watermarked.png")
         if check:
-            flash('Image already exist.', category='error')
+            os.path.remove("website/static/image/" + filename + "-watermarked.png")
         else:
             img = Imge(image=pic.read(), mimetype=mimetype, name=filename)
             watermarked_file = apply_watermark(pic, filename, watermark_text, fontType, placement, color)
 
-            db.session.add(img)
-            db.session.commit()
-            flash('Image has been uploaded!', category='success')
-
-            return render_template("watermark.html", user=current_user, image=Path(f"static/{watermarked_file}"))
+            # db.session.add(img)
+            # db.session.commit()
+            return render_template("watermark.html", user=current_user, image=Path(f"static/image/{watermarked_file}"))
 
     return render_template("watermark.html", user=current_user)
 
