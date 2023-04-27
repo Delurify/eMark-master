@@ -13,6 +13,7 @@
       output.src = reader.result;
       img_div.removeAttribute("hidden");
       document.getElementById("edit_option").removeAttribute("hidden");
+      $('#embedded').hide();
     };
     reader.readAsDataURL(event.target.files[0]);
   };
@@ -23,14 +24,16 @@
 <br />
 
 {% if image %}
-<div align="center">
+<div id="embedded" align="center">
   <img style="height: 50vh" src="{{ image }}" />
+  <a href="{{ image }}" download class="download-btn">Download</a>
 </div>
 {% endif %}
 
 <div align="center">
   <img hidden id="output" style="height: 50vh" src="{{ image }}" />
 </div>
+
 
 <br />
 

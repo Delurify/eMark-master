@@ -7,11 +7,6 @@ var anchorArray = [];
 var imageArray = [];
 var currentAnchor = -1;
 
-
-function updateAnchor(){
-
-}
-
 const stage = new Konva.Stage({
   height: stageHeight,
   width: stageWidth,
@@ -50,10 +45,10 @@ imageObj.onload = function () {
   });
 
   imageKon.on("click", function () {
-    if(anchorArray.length > 0){
-        for (let i = 0; i <anchorArray.length; i++) { 
-            anchorArray[i].remove();
-        }
+    if (anchorArray.length > 0) {
+      for (let i = 0; i < anchorArray.length; i++) {
+        anchorArray[i].remove();
+      }
     }
   });
 
@@ -76,9 +71,21 @@ rectButton.addEventListener("click", function () {
     cornerRadius: 8,
     draggable: true,
   });
-  layer.add(rect);
 
-  rectArray.push(rect);
+  var rectAnchor = new Konva.Transformer({
+    nodes: [rect],
+    keepRatio: true,
+  });
+
+  rect.on("click tap", function () {
+    layer.add(rectAnchor);
+  });
+
+  layer.add(rect);
+  layer.add(rectAnchor);
+
+  anchorArray.push(rectAnchor);
+  currentAnchor = anchorArray.length - 1;
 });
 
 var circleButton = document.getElementById("circletool");
@@ -94,9 +101,20 @@ circleButton.addEventListener("click", function () {
     draggable: true,
   });
 
-  layer.add(circle);
+  var circleAnchor = new Konva.Transformer({
+    nodes: [circle],
+    keepRatio: true,
+  });
 
-  circleArray.push(circle);
+  circle.on("click tap", function () {
+    layer.add(circleAnchor);
+  });
+
+  layer.add(circle);
+  layer.add(circleAnchor);
+
+  anchorArray.push(circleAnchor);
+  currentAnchor = anchorArray.length - 1;
 });
 
 var textButton = document.getElementById("texttool");
@@ -118,10 +136,40 @@ textButton.addEventListener("click", function () {
     enabledAnchors: ["top-left", "top-right", "bottom-left", "bottom-right"],
   });
 
-  simpleText.on("click", function () {
+  simpleText.on("click tap", function () {
     layer.add(textAnchor);
+  });
 
-    //给key的名字dynamically
+  simpleText.on("dblclick dbltap", () => {
+    //create text over canvas with absolute position
+    var textPosition = textNode.getAbsolutePosition();
+
+    var stageBox = stage.container().getBoundingClientRect();
+
+    // so position of textarea will be the sum of positions above:
+    var areaPosition = {
+      x: stageBox.left + textPosition.x,
+      y: stageBox.top + textPosition.y,
+    };
+
+    // create textarea and style it
+    var textarea = document.createElement('textarea');
+    document.body.appendChild(textarea);
+
+    textarea.value = textNode.text();
+    textarea.style.position = 'absolute';
+    textarea.style.top = areaPosition.y + 'px';
+    textarea.style.left = areaPosition.x + 'px';
+    textarea.style.width = textNode.width();
+
+    textarea.focus();
+    textarea.addEventListener('keydown', function (e) {
+      // hide on enter
+      if (e.keyCode === 13) {
+        simpleText.text(textarea.value);
+        document.body.removeChild(textarea);
+      }
+    });
 
   });
 
@@ -132,6 +180,3 @@ textButton.addEventListener("click", function () {
   anchorArray.push(textAnchor);
   currentAnchor = anchorArray.length - 1;
 });
-
-
-
