@@ -16,7 +16,6 @@
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="https//unpkg.com/boxicons@2.1.2/css/boxicons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"/>
     <script src="https://unpkg.com/konva@8.4.2/konva.min.js"></script>
     
@@ -86,7 +85,12 @@
 
     <script
       type="text/javascript"
-      src="{{ url_for('static', filename='index.js') }}"
+      src="{{ url_for('static', filename='canvas.js') }}"
+    ></script>
+
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='watermark.js') }}"
     ></script>
   </body>
 </html>

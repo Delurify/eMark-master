@@ -1,139 +1,152 @@
 <link rel="stylesheet" href="/static/style.css" />
+
 <script
   src="https://code.jquery.com/jquery-3.6.4.min.js"
   integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
   crossorigin="anonymous"
 ></script>
 
-<script>
-  const loadFile = function (event) {
-    const reader = new FileReader();
-    const img_div = document.getElementById("output");
-    reader.onload = function () {
-      const output = document.getElementById("output");
-      output.src = reader.result;
-      img_div.removeAttribute("hidden");
-      document.getElementById("edit_option").removeAttribute("hidden");
-      $("#embedded").hide();
-    };
-    reader.readAsDataURL(event.target.files[0]);
-  };
-</script>
-
 {%extends "base.html" %} {%block title %}Home{% endblock %} {% block content %}
 <!-- <h1 align="center">Watermark</h1> -->
 <br />
-
-{% if image %}
-<div id="embedded" align="center">
-  <img style="height: 50vh" src="{{ image }}" />
-  <a href="{{ image }}" download class="download-btn">Download</a>
-</div>
-{% endif %}
-
-<div align="center">
-  <img hidden id="output" style="height: 50vh" src="{{ image }}" />
-</div>
-
 <br />
 
+
+<br />
 <form
   method="POST"
   enctype="multipart/form-data"
-  align="center"
   action="/watermark"
 >
-  <!-- <input
-    type="file"
-    id="image_input"
-    name="image"
-    accept="image/*"
-    onchange="loadFile(event)"
-  />
-  <input type="submit" id="upload-image" value="Upload" /> -->
-
-  <div hidden id="edit_option">
-    <select id="fontFamily" name="fontFamily">
-      <option value="Arial.ttf">Arial</option>
-      <option value="Calibri.ttf">Calibri</option>
-      <option value="times-new-roman.ttf">Times New Roman</option>
-    </select>
-
-    <select id="placement" name="placement">
-      <option value="center">Center</option>
-      <option value="top-left">Top-Left</option>
-      <option value="top-right">Top-Right</option>
-      <option value="bottom-left">Bottom Left</option>
-      <option value="bottom-right">Bottom Right</option>
-    </select>
-
-    <input type="color" id="colorpicker" name="colorpicker" value="#ffffff" />
-  </div>
-</form>
-
-<br />
-<div class="container2" style="width:fit-content;">
-  <div style="display: flex; flex-direction: row; width:fit-content;">
-    <div class="column">
-      <h2 style="margin-bottom: 30px;">Digital Watermark Embedder</h2>
-      <div class="editor-panel">
-        <div class="insert_text" style="width:335px;padding: 15px 30px; border: 1px solid #ccc; border-radius:5px;">
-          <!-- input field -->
-          <label for="watermark_text" class="text" style="display: block; font-size: 16px;margin-bottom: 12px;">Text</label>
-          <div class="input_text">
-            <input
-              type="text"
-              id="watermark_text"
-              name="watermark_text"
-              placeholder="text"
-              value="Watermark"
-              required
-            />
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input
-            type="color"
-            id="colorpicker"
-            name="colorpicker"
-            value="#ffffff"
-          />
-          </div>
-          <!-- left side control -->
-          <div style="display:flex; flex-direction: column; ">
-            <br />
-            <!-- column 1 -->
-            <div id="edit_option">
-              <select id="fontFamily" name="fontFamily" style="width:5cm; margin-bottom: 10px;">
-                <option value="Arial.ttf">Arial</option>
-                <option value="Calibri.ttf">Calibri</option>
-                <option value="times-new-roman.ttf">Times New Roman</option>
-              </select>
+  <div class="container2" style="width: fit-content">
+    <div style="display: flex; flex-direction: row; width: fit-content">
+      <div class="column">
+        <h2 style="margin-bottom: 30px">Digital Watermark Embedder</h2>
+        <div class="editor-panel">
+          <div
+            class="insert_text"
+            style="
+              width: 335px;
+              padding: 15px 30px;
+              border: 1px solid #ccc;
+              border-radius: 5px;
+            "
+          >
+            <!-- input field -->
+            <label
+              for="watermark_text"
+              class="text"
+              style="display: block; font-size: 16px; margin-bottom: 12px"
+              >Text</label
+            >
+            <div class="input_text">
+              <input
+                type="text"
+                id="watermark_text"
+                name="watermark_text"
+                placeholder="input text here."
+                required
+              />
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <input
+                type="color"
+                id="colorpicker"
+                name="colorpicker"
+                value="#ffffff"
+              />
             </div>
-            <!-- column 2 -->
-            <div class="edit_option2">
-              <select id="placement" name="placement" style="width:5cm; margin-bottom: 10px;">
-                <option value="center">Center</option>
-                <option value="top-left">Top-Left</option>
-                <option value="top-right">Top-Right</option>
-                <option value="bottom-left">Bottom Left</option>
-                <option value="bottom-right">Bottom Right</option>
-              </select>
+            <!-- left side control -->
+            <div style="display: flex; flex-direction: column">
               <br />
-              <div class="controls">
-                <button class="choose-img" style="width: 4cm; margin-top: 10px; margin-right: 5px;">Choose Image</button>&nbsp;&nbsp;
-                <button class="save-img" style="width: 4cm; margin-top: 10px;">Save Image</button>
+              <!-- column 1 -->
+              <div id="edit_option">
+                <select
+                  id="fontFamily"
+                  name="fontFamily"
+                  style="width: 5cm; margin-bottom: 10px"
+                >
+                  <option value="Arial.ttf">Arial</option>
+                  <option value="Calibri.ttf">Calibri</option>
+                  <option value="times-new-roman.ttf">Times New Roman</option>
+                </select>
+              </div>
+              <!-- column 2 -->
+              <div class="edit_option2">
+                <select
+                  id="placement"
+                  name="placement"
+                  style="width: 5cm; margin-bottom: 10px"
+                >
+                  <option value="center">Center</option>
+                  <option value="top-left">Top-Left</option>
+                  <option value="top-right">Top-Right</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="bottom-right">Bottom Right</option>
+                </select>
+                <br />
+                <div class="controls">
+                  <input
+                    type="file"
+                    id="image_input"
+                    name="image"
+                    accept="image/*"
+                    onchange="loadImage()"
+                    hidden
+                  />
+                  <button type="button"
+                    class="choose-img"
+                    style="width: 4cm; margin-top: 10px; margin-right: 5px"
+                  >
+                    Choose Image</button
+                  >&nbsp;&nbsp;
+                  {% if image %}
+                  <button class="embed" style="width: 4cm; margin-top: 10px" hidden>
+                    Embed Image
+                  </button>
+                  {% else %}
+                  <button class="embed" style="width: 4cm; margin-top: 10px">
+                    Embed Image
+                  </button>
+                  {% endif %}
+                </div>
               </div>
             </div>
           </div>
+          {% if image %}
+          <a
+            class="save-img"
+            href="{{ image }}"
+            download
+            class="download-btn"
+            style="width: 4cm; margin-top: 10px"
+            >Save Image</a
+          >
+          {% endif %}
         </div>
       </div>
-    </div>
-    <div class="column">
-      <br>
-      <!-- right side preview -->
-      <div class="preview-img" style="margin-top: 20px">
-        <img src="/static/image/image-placeholder.svg" alt="preview-img" style="margin-left: 3cm;"/>
+      <div class="column">
+        <br />
+        <!-- right side preview -->
+        {% if image %}
+        <div class="preview-img" id="embedded" style="margin-top: 20px; margin-right: 50px" align="center">
+          <img
+            src="{{ image }}"
+            alt="preview-img"
+            style="margin-left: 0.5cm"
+          />
+        </div>
+        {% else %}
+        <div class="preview-img" id="embedded" style="margin-top: 20px; margin-right: 50px" align="center">
+          <img
+            src="/static/image/image-placeholder.svg"
+            alt="preview-img"
+            style="margin-left: 0.5cm"
+          />
+        </div>
+        {% endif %}
+
       </div>
     </div>
   </div>
-</div>
+</form>
 {% endblock %}

@@ -144,6 +144,10 @@ def apply_watermark(raw_image, name, watermark_text, fontType, placement, color)
 def watermark():
     if request.method == 'POST':
         pic = request.files['image']
+
+        if not pic:
+            pic = request.files['preview-img']
+            
         watermark_text = request.form.get('watermark_text')
         fontType = request.form.get('fontFamily')
         placement = request.form.get('placement')
