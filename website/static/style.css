@@ -1,0 +1,33 @@
+body{
+    /* display: flex; */
+    align-items: center;
+    justify-content:center;
+    min-height: 100vh;
+    background: #E3F2FD;
+}
+
+.container2{
+    display: flex;
+    width: 800px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 30px 35px 35px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    margin-left: 50px;
+}
+
+.container2 h2{
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.container2 .wrapper{
+    display: flex;
+    margin: 20px 0;
+    min-height: 335px;
+}
+
+h2{
+    font-size: 22px;
+    font-weight: 500;
+}
