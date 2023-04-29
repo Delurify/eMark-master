@@ -58,6 +58,32 @@ imageObj.onload = function () {
   imageArray.push(imageKon);
 };
 
+// function from https://stackoverflow.com/a/15832662/512042
+function downloadURI(uri, name) {
+  var link = document.createElement('a');
+  link.download = name;
+  link.href = uri;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  delete link;
+}
+
+document.getElementById('save').addEventListener(
+  'click',
+  function () {
+    if (anchorArray.length > 0) {
+      for (let i = 0; i < anchorArray.length; i++) {
+        anchorArray[i].remove();
+      }
+    }
+
+    var dataURL = stage.toDataURL({ pixelRatio: 3 });
+    downloadURI(dataURL, 'watermarked.png');
+  },
+  false
+);
+
 var rectButton = document.getElementById("rectangletool");
 rectButton.addEventListener("click", function () {
   //create Rectangle
@@ -180,3 +206,5 @@ textButton.addEventListener("click", function () {
   anchorArray.push(textAnchor);
   currentAnchor = anchorArray.length - 1;
 });
+
+
