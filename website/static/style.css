@@ -60,6 +60,11 @@ h2{
     color: #fff;
 }
 
+.container2 .column .editor-panel .insert_text .multiple-img{
+    border: 1px solid #6c757D;
+    color: #6c757D;
+}
+
 .container2 .column .editor-panel .insert_text .embed{
     background: #5372F0;
     border: 1px solid #5372F0;
@@ -69,7 +74,7 @@ h2{
 
 .preview-img img{
     max-width: 490;
-    max-height: 302px;
+    max-height: 350px;
     width: 100%;
     height: 100%;
     object-fit: contain;
@@ -90,6 +95,3 @@ h2{
         margin: 0 0 15px;
     }
 }
-
-
-

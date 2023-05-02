@@ -22,6 +22,7 @@
     <div style="display: flex; flex-direction: row; width: fit-content">
       <div class="column">
         <h2 style="margin-bottom: 30px">Digital Watermark Embedder</h2>
+        
         <div class="editor-panel">
           <div
             class="insert_text"
@@ -98,26 +99,54 @@
                     onchange="loadImage()"
                     hidden
                   />
+
+                  <input
+                    type="file"
+                    id="image_batch"
+                    multiple
+                    name="image-batch[]"
+                    accept="image/*"
+                    onchange="loadImageBatch()"
+                    hidden
+                  />
+                  
                   <button type="button"
                     class="choose-img"
-                    style="width: 4cm; margin-top: 10px; margin-right: 5px"
+                    style="width: 4.2cm; margin-top: 10px; margin-right: 5px"
                   >
                     Choose Image</button
-                  >&nbsp;&nbsp;
+                  >
+                  <button type="button"
+                    class="multiple-img"
+                    style="width: 4.2cm; margin-top: 10px;"
+                  >
+                    Multiple Images</button
+                  >
+
+
                   {% if image %}
-                  <button class="embed" style="width: 4cm; margin-top: 10px" hidden>
-                    Embed Image
+                  <button class="embed" style="width: 4.2cm; margin-top: 10px" hidden>
+                    Embed
                   </button>
                   {% else %}
-                  <button class="embed" style="width: 4cm; margin-top: 10px">
-                    Embed Image
+                  <button class="embed" style="width: 4.2cm; margin-top: 10px">
+                    Embed
                   </button>
                   {% endif %}
                 </div>
               </div>
             </div>
           </div>
-          {% if image %}
+          {% if zipfile %}
+          <a
+            class="save-img"
+            href="{{ zipfile }}"
+            download
+            class="download-btn"
+            style="width: 4cm; margin-top: 10px"
+            >Save Images</a
+          >
+          {% elif image %}
           <a
             class="save-img"
             href="{{ image }}"
@@ -152,6 +181,7 @@
 
       </div>
     </div>
+    
   </div>
 </form>
 {% endblock %}
