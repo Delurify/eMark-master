@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <style>
+      .sticky-top {
+        position: fixed;
+        top: 0;
+        width: 100%;
+      }
+    </style>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     
@@ -23,7 +31,7 @@
     <title>{% block title %}Home{% endblock %}</title>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
       <button
         class="navbar-toggler"
         type="button"

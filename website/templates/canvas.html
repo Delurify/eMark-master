@@ -13,19 +13,20 @@
 
 {%extends "base.html" %} {%block title %}Canvas{% endblock %} {% block content
 %}
+<br>
 <h1 align="center">Canvas</h1>
 <!-- <div align=center><canvas id="paint" width="750" height="450" style="border: 5px solid #000000;">Update your browser to support HTML5 Canvas</canvas>
 </div> -->
+<p style="text-align: center;">We apologize for any inconvenience, 
+  but please note that this function is currently under development and will be available soon.</p>
 {% if image %}
 <div align="center" id="konva-holder"></div>
 <br />
 <div align="center" id="menu">
-  <button id="save">Save as image</button>
-  <button id="rectangletool" type="button" class="btn btn-info">
-    Rectangle
-  </button>
-  <button id="circletool" type="button" class="btn btn-info">Circle</button>
-  <button id="texttool" type="button" class="btn btn-info">Text</button>
+  <button id="rectangletool" type="button" class="btn btn-outline-info">Rectangle</button>
+  <button id="circletool" type="button" class="btn btn-outline-info">Circle</button>
+  <button id="texttool" type="button" class="btn btn-outline-info">Text</button>
+  <button id="save" class="btn btn-info" style="margin-left: 24px;">Save as image</button>
 </div>
 {% endif %}
 
@@ -34,13 +35,14 @@
   enctype="multipart/form-data"
   align="center"
   action="/canvas"
->
-  <input type="file" id="image_canvas" name="image" accept="image/*" />
+><br>
+  <input type="file" id="image_canvas" name="image" accept="image/*"/>
   <input
     type="submit"
     id="insert_canvas"
     value="Upload"
     onClick="insertCanvas()"
+    class="btn btn-dark"
   />
 </form>
 {% endblock %}

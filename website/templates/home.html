@@ -1,10 +1,76 @@
 {%extends "base.html" %}
-{%block title %}Home{% endblock %}
+<script>
+  const watermarkLink = document.getElementById("watermark"),
+    watermarkBtn = document.getElementById("watermarkBtn");
+
+  watermarkBtn.addEventListener("click", () => watermarkLink.click());
+</script>
 
 
-{% block content %}
-<h1 align="center">Notes</h1>
-<ul class="list-group list-group-flush" id="notes">
+{%block title %}Home{% endblock %} {% block content %}
+<br />
+<h1 style="font-family: 'Lucida Sans'; font-size: 72px; text-align: center">
+  <i>e</i>-Mark
+</h1>
+<p style="text-align: center; font-size: 24px; line-height: 1">
+  Digital Watermarking on Academic e-Certificate
+</p>
+
+<br />
+<!-- Welcome -->
+<div style="display: flex; flex-direction: row">
+  <img src="{{ url_for('static', filename='/asset/watermark-icon.png') }}" alt="watermark-icon" style="width: 240px; height: 240px; margin-right: 2cm"/>
+
+  <p style="text-align: justify; flex: 1">
+    <span style="font-size: 20px;"><b>About e-Mark</b></span><br>
+    Welcome to e-Mark, our prototype for digital watermarking on academic
+    e-certificates. Our goal is to provide a simple, effective, and affordable
+    solution for verifying the authenticity of academic credentials. Using our
+    easy-to-use interface, you can quickly and easily embed a watermark onto a
+    group of images, making it virtually impossible to alter or forge academic
+    certificates. By overlapping words on images, we create a unique and
+    tamper-proof identifier for each certificate, ensuring its authenticity.
+    With e-Mark, employers and educational institutions can quickly and easily
+    verify the authenticity of a certificate, without the need for complex
+    verification procedures. Explore our prototype to see how we're making
+    academic credentials more secure and reliable than ever before.
+    &nbsp;&nbsp;&nbsp;
+    <span style="color: rgb(160, 160, 160); font-size: 12px;">
+        Watermark icons created by Freepik -
+        <a href="https://www.flaticon.com/free-icons/watermark" title="watermark icons" target="_blank">Flaticon</a>
+      </span>
+    <br>
+    <a id="watermark" href="/watermark" >
+    <button type="button" id="watermarkBtn" class="btn btn-dark" style="float: right;">Try now</button></a>
+  </p>
+</div>
+<br /><br />
+<!-- Future Expansion -->
+<div style="display: flex; flex-direction: row">
+<p style="text-align: justify; flex: 1">
+    <span style="font-size: 20px;"><b>Future Expansion</b></span><br>
+    type your future expansion here... (canvas & watermark)
+    <br>
+    <span style="color: rgb(160, 160, 160); font-size: 12px;">
+        Watermark icons created by Prosymbols -
+        <a href="https://www.flaticon.com/free-icons/process" title="watermark icons" target="_blank">Flaticon</a>
+      </span>
+</p>
+<img src="{{ url_for('static', filename='/asset/planning.png') }}" alt="watermark-icon" style="width: 240px; height: 240px; margin-left: 2cm"/>
+
+</div>
+<!-- About Us -->
+<br /><br />
+<p style="text-align: justify; flex: 1">
+    <span style="font-size: 20px;"><b>About Us</b></span><br>
+    Feel free to contact us if you have any questions about e-Mark<br>
+    <br>
+    &nbsp;&nbsp;<b>Ang Toon Ph'ng</b><br>
+    &nbsp;&nbsp;ang_toon_phng@soc.uum.edu.my<br>
+</p>
+<br /><br /><br />
+
+<!-- <ul class="list-group list-group-flush" id="notes">
     {% for note in user.notes %}
     <li class="list-group-item">
         {{ note.data }}
@@ -20,5 +86,5 @@
     <div align="center">
         <button type="submit" class="btn btn-info">Add Note</button>
     </div>
-</form>
+</form> -->
 {% endblock %}
