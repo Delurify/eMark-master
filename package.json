@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "konva": "^8.4.2"
+    "konva": "^8.4.2",
+    "request": "^2.88.2"
   }
 }
