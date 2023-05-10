@@ -1,9 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    List-style: none;
+    text-decoration: none;
+}
+
 body{
-    /* display: flex; */
-    align-items: center;
-    justify-content:center;
-    min-height: 100vh;
-    background: #E3F2FD;
+    background: #f3f5f9;
+}
+
+.wrapper{
+    display: flex;
+    position: relative;
+}
+
+.wrapper .sidebar{
+    position: fixed;
+    width:200px;
+    height:100%;
+    background: #4b4276;
+    padding: 30px 0;
+    font-family: 'Josefin Sans', sans-serif;
+}
+
+.wrapper .sidebar h2{
+    color: #fff;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 30px;
+    margin-top: 10;
+}
+
+.wrapper .sidebar ul li{
+    padding: 15px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    border-top: 1px solid rgba(225, 225, 225 ,0.05);
+}
+
+.wrapper .sidebar ul li a{
+    color: #bdb8d7;
+    display: block;
+}
+
+.wrapper .sidebar ul li a .fas{
+    width: 30px;
+}
+
+.wrapper .sidebar ul li:hover{
+    background: #594f8d;
+}
+
+.wrapper .sidebar ul li:hover a{
+    color: #fff;
+}
+
+.sticky-left{
+    position: fixed;
+    left: 0;
+    top: 50;
+    width: 100%;
 }
 
 .container2{
@@ -13,7 +71,7 @@ body{
     border-radius: 10px;
     padding: 30px 35px 35px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    margin-left: 50px;
+    margin-left: 150;
 }
 
 .container2 h2{

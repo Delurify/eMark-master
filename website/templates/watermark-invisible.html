@@ -1,0 +1,199 @@
+<link rel="stylesheet" href="/static/style.css" />
+
+<script
+  src="https://code.jquery.com/jquery-3.6.4.min.js"
+  integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://kit.fontawesome.com/1fe9aa0e58.js"
+  crossorigin="anonymous"
+></script>
+
+{%extends "base.html" %} {%block title %}e-Mark - Watermark{% endblock %} {%
+block content %}
+<!-- <h1 align="center">Watermark</h1> -->
+<br />
+<br />
+<br />
+<div class="wrapper">
+  <div class="sidebar sticky-left">
+    <h2>e-mark</h2>
+    <ul>
+      <li>
+        <a href="/watermark-text"><i class="fas fa-solid fa-font"></i>Text</a>
+      </li>
+      <li>
+        <a href="/watermark-invisible"
+          ><i class="fas fa-solid fa-eye-slash" active></i>Invisible</a
+        >
+      </li>
+    </ul>
+  </div>
+  <div class="main_content">
+    <form method="POST" enctype="multipart/form-data" action="/watermark-invisible">
+      <div class="container2" style="width: fit-content">
+        <div style="display: flex; flex-direction: row; width: fit-content">
+          <div class="column">
+            <h2 style="margin-bottom: 30px">Digital Watermark Encoder</h2>
+
+            <div class="editor-panel">
+              <div
+                class="insert_text"
+                style="
+                  width: 335px;
+                  padding: 5px 30px;
+                  border: 1px solid #ccc;
+                  border-radius: 5px;
+                "
+              >
+                <!-- input field -->
+                <label
+                  for="hidden_text"
+                  class="text"
+                  style="display: block; font-size: 16px; margin-bottom: 12px"
+                  >Enter text to hide:</label
+                >
+                  <input
+                    type="text"
+                    id="hidden_text"
+                    name="hidden_text"
+                    placeholder="input text here."
+                    required
+                  />
+                <br />
+                <br />
+
+                <label
+                  for="watermark_password"
+                  class="text"
+                  style="display: block; font-size: 16px; margin-bottom: 12px"
+                  >Enter Password:</label
+                >
+                  <input
+                    type="password"
+                    id="watermark_password"
+                    name="watermark_password"
+                    required
+                  />
+                <!-- left side control -->
+                <div style="display: flex; flex-direction: column">
+                  <br />
+                    <br />
+                    <div class="controls">
+                      <input
+                        type="file"
+                        id="image_input"
+                        name="image"
+                        accept="image/*, application/pdf"
+                        onchange="loadImage()"
+                        hidden
+                      />
+
+                      <input
+                        type="file"
+                        id="image_batch"
+                        multiple
+                        name="image-batch[]"
+                        accept="image/*, application/pdf"
+                        onchange="loadImageBatch()"
+                        hidden
+                      />
+
+                      <button
+                        type="button"
+                        class="choose-img"
+                        style="
+                          width: 4.2cm;
+                          margin-right: 5px;
+                        "
+                      >
+                        Choose Image
+                      </button>
+                      <button
+                        type="button"
+                        class="multiple-img"
+                        style="width: 4.2cm; margin-top: 10px"
+                      >
+                        Multiple Images
+                      </button>
+
+                      {% if image %}
+                      <button
+                        class="embed"
+                        style="width: 4.2cm; margin-top: 10px"
+                        hidden
+                      >
+                        Encode
+                      </button>
+                      {% else %}
+                      <button
+                        class="embed"
+                        style="width: 4.2cm; margin-top: 10px"
+                      >
+                        Encode
+                      </button>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% if zipfile %}
+              <a
+                class="save-img"
+                href="{{ zipfile }}"
+                download
+                class="download-btn"
+                style="width: 4cm; margin-top: 10px"
+                >Save Images</a
+              >
+              {% elif image %}
+              <a
+                class="save-img"
+                href="{{ image }}"
+                download
+                class="download-btn"
+                style="width: 4cm; margin-top: 10px"
+                >Save Image</a
+              >
+              {% endif %}
+            </div>
+          </div>
+          <div class="column">
+            <br />
+            <!-- right side preview -->
+            {% if image %}
+            <div
+              class="preview-img"
+              id="embedded"
+              style="margin-top: 20px; margin-right: 50px"
+              align="center"
+            >
+              <img
+                src="{{ image }}"
+                alt="preview-img"
+                style="margin-left: 0.5cm"
+              />
+            </div>
+            {% else %}
+            <div
+              class="preview-img"
+              id="embedded"
+              style="margin-top: 20px; margin-right: 50px"
+              align="center"
+            >
+              <img
+                src="/static/asset/image-placeholder.svg"
+                alt="preview-img"
+                style="margin-left: 0.5cm"
+              />
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
