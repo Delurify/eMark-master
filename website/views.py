@@ -4,7 +4,7 @@ from pathlib import Path
 import glob
 from PIL import Image
 from PIL import ImageFont, ImageDraw, ImageColor
-from flask import Blueprint, Flask, render_template, flash, request, jsonify, Response
+from flask import Blueprint, Flask, render_template, flash, request, jsonify
 import flask
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
@@ -22,7 +22,6 @@ src = "https://code.jquery.com/jquery-3.6.0.min.js"
 
 views = Blueprint('views', __name__)
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'website/static/image'
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif'}
 
@@ -80,6 +79,171 @@ def canvas():
     # return redirect(url_for('views.canvas'))
     return render_template("canvas.html", user=current_user, image=Path(f"static/image/{pic}"))
 
+
+@views.route('/watermark-text', methods=['GET', 'POST'])
+@login_required
+def watermark_text():
+    if request.method == 'POST':
+        pic = request.files['image']
+        pics = flask.request.files.getlist('image-batch[]')
+            
+        watermark_text = request.form.get('watermark_text')
+        fontType = request.form.get('fontFamily') 
+        placement = request.form.get('placement')
+        color = request.form.get("colorpicker")
+        
+        # if there are no image uploaded
+        if not pic and len(pics) == 1 and 'application' in str(pics[0]):
+            flash('no pic uploaded', category='error')
+            return render_template("watermark-text.html", user=current_user)
+        # if there are no text written
+        if len(watermark_text) < 1:
+            flash('no text entered', category='error')
+            return render_template("watermark-text.html", user=current_user)
+        
+        if pic:
+            filename = secure_filename(pic.filename)
+            mimetype = pic.mimetype
+
+            files = glob.glob("website/static/image/*")
+            for f in files:
+                os.remove(f)
+
+            img = Imge(image=pic.read(), mimetype=mimetype, name=filename)
+            watermarked_file = apply_watermark(pic, filename, watermark_text, fontType, placement, color, 'single', 1)
+
+            flash('Digital Watermark embedded!', category='success')
+            return render_template("watermark-text.html", user=current_user, image=Path(f"static/image/{watermarked_file}"))
+
+        else:
+            loop = 1
+            files = glob.glob("website/static/image-batch/*")
+            for f in files:
+                os.remove(f)
+            for img in pics:
+                filename = secure_filename(img.filename)
+                mimetype = img.mimetype
+
+                # see whether the picture is already exist in the local storage, if yes delete the initial image in the storage
+                # check = os.path.exists("website/static/image-batch/" + filename)
+                # if check:
+                #     os.path.remove("website/static/image-batch/" + filename)
+                # else:
+                Img = Imge(image=pic.read(), mimetype=mimetype, name=filename)
+                watermarked_file = apply_watermark(img, filename, watermark_text, fontType, placement, color, 'batch', loop)
+                
+                loop = loop + 1
+                    # db.session.add(Img)
+                    # db.session.commit()
+
+        with zipfile.ZipFile('website/static/watermarked.zip','w', compression= zipfile.ZIP_DEFLATED) as zip:
+            for img in pics:
+                filename = secure_filename(img.filename)
+
+                new_filename = filename.replace(' ', '_')
+
+                # Get the name and extension parts of the filename
+                name, ext = os.path.splitext(new_filename)
+
+                #Change the extension to .png
+                new_ext = ".png"
+
+                new_filename = name + new_ext
+
+                zip.write("website/static/image-batch/" + new_filename, basename("website/static/image-batch/" + new_filename))
+
+        zip.close()
+        flash('Digital Watermark embedded!', category='success')
+        return render_template("watermark-text.html", user=current_user, image=Path(f"static/image-batch/{watermarked_file}"), zipfile=Path(f"static/watermarked.zip"))
+
+    return render_template("watermark-text.html", user=current_user)
+
+
+@views.route('/watermark-invisible', methods=['GET', 'POST'])
+@login_required
+def watermark_invisible():
+    if request.method == 'POST':
+        pic = request.files['image']
+        pics = flask.request.files.getlist('image-batch[]')
+            
+        hidden_text = request.form.get('hidden_text')
+        password = request.form.get('watermark_password')
+
+        # if there are no image uploaded
+        if not pic and len(pics) == 1 and 'application' in str(pics[0]):
+            flash('no pic uploaded', category='error')
+            return render_template("watermark-invisible.html", user=current_user)
+        
+        if pic:
+            filename = secure_filename(pic.filename)
+            mimetype = pic.mimetype
+
+            files = glob.glob("website/static/image/*")
+            for f in files:
+                os.remove(f)
+
+            img = Imge(image=pic.read(), mimetype=mimetype, name=filename)
+            watermarked_file = apply_watermark(pic, filename, "     ", "Arial.ttf", "center", "#fff", 'single', 1)
+
+            if filename.endswith(".jpg"):
+                prefix = filename.split(".jpg")[0]
+                PNGfilename = prefix + ".png"
+                encode("website/static/image/" + PNGfilename, hidden_text,"website/static/image/" + PNGfilename, password)
+
+            else:
+                encode("website/static/image/" + filename, hidden_text,"website/static/image/" + filename, password)
+
+            flash('Hidden message Encoded!', category='success')
+            return render_template("watermark-invisible.html", user=current_user, image=Path(f"static/image/{watermarked_file}"))
+
+        else:
+            loop = 1
+            files = glob.glob("website/static/image-batch/*")
+            for f in files:
+                os.remove(f)
+            for img in pics:
+                filename = secure_filename(img.filename)
+                mimetype = img.mimetype
+
+                Img = Imge(image=pic.read(), mimetype=mimetype, name=filename)
+                
+                
+                #Encode invisible digital watermark into image with password same as text
+                if filename.endswith(".jpg"):
+                    prefix = filename.split(".jpg")[0]
+                    PNGfilename = prefix + ".png"
+                    encode("website/static/image-batch/" + PNGfilename, watermark_text,"website/static/image-batch/" + PNGfilename, watermark_text)
+
+                else:
+                    encode("website/static/image-batch/" + filename, watermark_text,"website/static/image-batch/" + filename, watermark_text)
+                
+                loop = loop + 1
+                    # db.session.add(Img)
+                    # db.session.commit()
+
+        with zipfile.ZipFile('website/static/watermarked.zip','w', compression= zipfile.ZIP_DEFLATED) as zip:
+            for img in pics:
+                filename = secure_filename(img.filename)
+
+                new_filename = filename.replace(' ', '_')
+
+                # Get the name and extension parts of the filename
+                name, ext = os.path.splitext(new_filename)
+
+                #Change the extension to .png
+                new_ext = ".png"
+
+                new_filename = name + new_ext
+
+                zip.write("website/static/image-batch/" + new_filename, basename("website/static/image-batch/" + new_filename))
+
+        zip.close()
+        flash('Hidden Text Encoded!', category='success')
+        return render_template("watermark-invisible.html", user=current_user, image=Path(f"static/image-batch/" + new_filename), zipfile=Path(f"static/watermarked.zip"))
+
+    return render_template("watermark-invisible.html", user=current_user)
+
+# Apply watermark
 fontSize = 1
 
 def apply_watermark(raw_image, name, watermark_text, fontType, placement, color, type, loop):
@@ -153,192 +317,6 @@ def apply_watermark(raw_image, name, watermark_text, fontType, placement, color,
 
     return filename
 
-
-@views.route('/watermark-text', methods=['GET', 'POST'])
-@login_required
-def watermark_text():
-    if request.method == 'POST':
-        pic = request.files['image']
-        pics = flask.request.files.getlist('image-batch[]')
-            
-        watermark_text = request.form.get('watermark_text')
-        fontType = request.form.get('fontFamily') 
-        placement = request.form.get('placement')
-        color = request.form.get("colorpicker")
-        
-        # if there are no image uploaded
-        if not pic and not pics:
-            flash('no pic uploaded', category='error')
-            return render_template("watermark-text.html", user=current_user)
-        # if there are no text written
-        if len(watermark_text) < 1:
-            flash('no text entered', category='error')
-            return render_template("watermark-text.html", user=current_user)
-        
-        if pic:
-            filename = secure_filename(pic.filename)
-            mimetype = pic.mimetype
-
-            files = glob.glob("website/static/image/*")
-            for f in files:
-                os.remove(f)
-
-            img = Imge(image=pic.read(), mimetype=mimetype, name=filename)
-            watermarked_file = apply_watermark(pic, filename, watermark_text, fontType, placement, color, 'single', 1)
-            if filename.endswith(".jpg"):
-                prefix = filename.split(".jpg")[0]
-                PNGfilename = prefix + ".png"
-                encode("website/static/image/" + PNGfilename, watermark_text,"website/static/image/" + PNGfilename, watermark_text)
-
-            else:
-                encode("website/static/image/" + filename, watermark_text,"website/static/image/" + filename, watermark_text)
-                # db.session.add(img)
-                # db.session.commit()
-            flash('Digital Watermark embedded!', category='success')
-            return render_template("watermark-text.html", user=current_user, image=Path(f"static/image/{watermarked_file}"))
-
-        else:
-            loop = 1
-            files = glob.glob("website/static/image-batch/*")
-            for f in files:
-                os.remove(f)
-            for img in pics:
-                filename = secure_filename(img.filename)
-                mimetype = img.mimetype
-
-                # see whether the picture is already exist in the local storage, if yes delete the initial image in the storage
-                # check = os.path.exists("website/static/image-batch/" + filename)
-                # if check:
-                #     os.path.remove("website/static/image-batch/" + filename)
-                # else:
-                Img = Imge(image=pic.read(), mimetype=mimetype, name=filename)
-                watermarked_file = apply_watermark(img, filename, watermark_text, fontType, placement, color, 'batch', loop)
-                
-                #Encode invisible digital watermark into image with password same as text
-                if filename.endswith(".jpg"):
-                    prefix = filename.split(".jpg")[0]
-                    PNGfilename = prefix + ".png"
-                    encode("website/static/image-batch/" + PNGfilename, watermark_text,"website/static/image-batch/" + PNGfilename, watermark_text)
-
-                else:
-                    encode("website/static/image-batch/" + filename, watermark_text,"website/static/image-batch/" + filename, watermark_text)
-                
-                loop = loop + 1
-                    # db.session.add(Img)
-                    # db.session.commit()
-
-        with zipfile.ZipFile('website/static/watermarked.zip','w', compression= zipfile.ZIP_DEFLATED) as zip:
-            for img in pics:
-                filename = secure_filename(img.filename)
-
-                new_filename = filename.replace(' ', '_')
-
-                # Get the name and extension parts of the filename
-                name, ext = os.path.splitext(new_filename)
-
-                #Change the extension to .png
-                new_ext = ".png"
-
-                new_filename = name + new_ext
-
-                zip.write("website/static/image-batch/" + new_filename, basename("website/static/image-batch/" + new_filename))
-
-        zip.close()
-        flash('Digital Watermark embedded!', category='success')
-        return render_template("watermark-text.html", user=current_user, image=Path(f"static/image-batch/{watermarked_file}"), zipfile=Path(f"static/watermarked.zip"))
-
-    return render_template("watermark-text.html", user=current_user)
-
-
-@views.route('/watermark-invisible', methods=['GET', 'POST'])
-@login_required
-def watermark_invisible():
-    if request.method == 'POST':
-        pic = request.files['image']
-        pics = flask.request.files.getlist('image-batch[]')
-            
-        hidden_text = request.form.get('hidden_text')
-        password = request.form.get('watermark_password')
-
-        # if there are no image uploaded
-        if not pic and not pics:
-            flash('no pic uploaded', category='error')
-            return render_template("watermark-invisible.html", user=current_user)
-        # if there are no text written
-        if len(hidden_text) < 1:
-            flash('no text entered', category='error')
-            return render_template("watermark-invisible.html", user=current_user)
-        
-        if pic:
-            filename = secure_filename(pic.filename)
-            mimetype = pic.mimetype
-
-            files = glob.glob("website/static/image/*")
-            for f in files:
-                os.remove(f)
-
-            img = Imge(image=pic.read(), mimetype=mimetype, name=filename)
-            pic.save(Path('website/static/image', filename))
-
-            if filename.endswith(".jpg"):
-                prefix = filename.split(".jpg")[0]
-                PNGfilename = prefix + ".png"
-                encode("website/static/image/" + PNGfilename, hidden_text,"website/static/image/" + PNGfilename, password)
-
-            else:
-                encode("website/static/image/" + filename, hidden_text,"website/static/image/" + filename, password)
-                # db.session.add(img)
-                # db.session.commit()
-            flash('Hidden message Encoded!', category='success')
-            return render_template("watermark-invisible.html", user=current_user, image=Path(f"static/image/" + new_filename))
-
-        else:
-            loop = 1
-            files = glob.glob("website/static/image-batch/*")
-            for f in files:
-                os.remove(f)
-            for img in pics:
-                filename = secure_filename(img.filename)
-                mimetype = img.mimetype
-
-                Img = Imge(image=pic.read(), mimetype=mimetype, name=filename)
-                img.save(Path('website/static/image-batch', filename))
-                
-                #Encode invisible digital watermark into image with password same as text
-                if filename.endswith(".jpg"):
-                    prefix = filename.split(".jpg")[0]
-                    PNGfilename = prefix + ".png"
-                    encode("website/static/image-batch/" + PNGfilename, watermark_text,"website/static/image-batch/" + PNGfilename, watermark_text)
-
-                else:
-                    encode("website/static/image-batch/" + filename, watermark_text,"website/static/image-batch/" + filename, watermark_text)
-                
-                loop = loop + 1
-                    # db.session.add(Img)
-                    # db.session.commit()
-
-        with zipfile.ZipFile('website/static/watermarked.zip','w', compression= zipfile.ZIP_DEFLATED) as zip:
-            for img in pics:
-                filename = secure_filename(img.filename)
-
-                new_filename = filename.replace(' ', '_')
-
-                # Get the name and extension parts of the filename
-                name, ext = os.path.splitext(new_filename)
-
-                #Change the extension to .png
-                new_ext = ".png"
-
-                new_filename = name + new_ext
-
-                zip.write("website/static/image-batch/" + new_filename, basename("website/static/image-batch/" + new_filename))
-
-        zip.close()
-        flash('Hidden Text Encoded!', category='success')
-        return render_template("watermark-invisible.html", user=current_user, image=Path(f"static/image-batch/" + new_filename), zipfile=Path(f"static/watermarked.zip"))
-
-    return render_template("watermark-invisible.html", user=current_user)
-
 # Image encryption: Steganography
 def encrypt_decrypt(string,password,mode='enc'):
     _hash = md5(password.encode()).hexdigest() #get hash of password
@@ -363,6 +341,7 @@ def encode(input_filepath,text,output_filepath,password=None):
     bin_data = iter(data_length + str2bin(data)) #add length of data with actual data and get the binary form of whole thing
     img = imread(input_filepath,1) #read the cover image
     if img is None:
+        flash('Please in', category='success')
         raise FileError("The image file '{}' is inaccessible".format(input_filepath)) #if image is not accessible, raise an exception
     height,width = img.shape[0],img.shape[1] #get height and width of cover image
     encoding_capacity = height*width*3 #maximum number of bits of data that the cover image can hide

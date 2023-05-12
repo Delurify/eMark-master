@@ -12,6 +12,10 @@ body{
     background: #f3f5f9;
 }
 
+.sidenav{
+    margin-left: 200px;
+}
+
 .wrapper{
     display: flex;
     position: relative;

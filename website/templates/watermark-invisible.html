@@ -23,9 +23,9 @@ block content %}
       <li>
         <a href="/watermark-text"><i class="fas fa-solid fa-font"></i>Text</a>
       </li>
-      <li>
+      <li style="background: #594f8d">
         <a href="/watermark-invisible"
-          ><i class="fas fa-solid fa-eye-slash" active></i>Invisible</a
+          ><i class="fas fa-solid fa-eye-slash" ></i>Invisible</a
         >
       </li>
     </ul>
@@ -35,7 +35,7 @@ block content %}
       <div class="container2" style="width: fit-content">
         <div style="display: flex; flex-direction: row; width: fit-content">
           <div class="column">
-            <h2 style="margin-bottom: 30px">Digital Watermark Encoder</h2>
+            <h2 style="margin-bottom: 30px">Digital Watermark Embedder</h2>
 
             <div class="editor-panel">
               <div
@@ -51,7 +51,7 @@ block content %}
                 <label
                   for="hidden_text"
                   class="text"
-                  style="display: block; font-size: 16px; margin-bottom: 12px"
+                  style="display: block; font-size: 16px; margin-bottom: 12px; margin-top: 8px"
                   >Enter text to hide:</label
                 >
                   <input
@@ -68,7 +68,7 @@ block content %}
                   for="watermark_password"
                   class="text"
                   style="display: block; font-size: 16px; margin-bottom: 12px"
-                  >Enter Password:</label
+                  >Set a Password:</label
                 >
                   <input
                     type="password"
@@ -78,8 +78,6 @@ block content %}
                   />
                 <!-- left side control -->
                 <div style="display: flex; flex-direction: column">
-                  <br />
-                    <br />
                     <div class="controls">
                       <input
                         type="file"
@@ -105,7 +103,7 @@ block content %}
                         class="choose-img"
                         style="
                           width: 4.2cm;
-                          margin-right: 5px;
+                          margin-right: 5px; margin-top: 15px
                         "
                       >
                         Choose Image
@@ -121,7 +119,7 @@ block content %}
                       {% if image %}
                       <button
                         class="embed"
-                        style="width: 4.2cm; margin-top: 10px"
+                        style="width: 4.2cm; margin-top: 10px;  margin-bottom: 7px;"
                         hidden
                       >
                         Encode
@@ -129,7 +127,7 @@ block content %}
                       {% else %}
                       <button
                         class="embed"
-                        style="width: 4.2cm; margin-top: 10px"
+                        style="width: 4.2cm; margin-top: 10px; margin-bottom: 7px;"
                       >
                         Encode
                       </button>
