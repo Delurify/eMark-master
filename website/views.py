@@ -201,25 +201,25 @@ def watermark_invisible():
             files = glob.glob("website/static/image-batch/*")
             for f in files:
                 os.remove(f)
+            
             for img in pics:
                 filename = secure_filename(img.filename)
                 mimetype = img.mimetype
 
-                Img = Imge(image=pic.read(), mimetype=mimetype, name=filename)
-                
-                
-                #Encode invisible digital watermark into image with password same as text
+                imge = Imge(image=img.read(), mimetype=mimetype, name=filename)
+                watermarked_file = apply_watermark(img, filename, "     ", "Arial.ttf", "center", "#fff", 'batch', loop)
+
                 if not filename.endswith(".png"):
                     prefix = filename.split(".")[0]
                     PNGfilename = prefix + ".png"
-                    encode("website/static/image-batch/" + PNGfilename, watermark_text,"website/static/image-batch/" + PNGfilename, watermark_text)
+                    encode("website/static/image-batch/" + PNGfilename, hidden_text,"website/static/image-batch/" + PNGfilename, password)
 
                 else:
-                    encode("website/static/image-batch/" + filename, watermark_text,"website/static/image-batch/" + filename, watermark_text)
-                
-                loop = loop + 1
-                    # db.session.add(Img)
-                    # db.session.commit()
+                    encode("website/static/image-batch/" + filename, hidden_text,"website/static/image-batch/" + filename, password)
+                    loop = loop + 1
+                    
+                # db.session.add(Img)
+                # db.session.commit()
 
         with zipfile.ZipFile('website/static/watermarked.zip','w', compression= zipfile.ZIP_DEFLATED) as zip:
             for img in pics:
@@ -326,7 +326,6 @@ def encrypt_decrypt(string,password,mode='enc'):
         return cipher.encrypt(string.encode()).decode() #encrypt the data
     else:
         return cipher.decrypt(string.encode()).decode() #decrypt the data
-
 
 
 def str2bin(string):
