@@ -94,7 +94,7 @@ def watermark_text():
         
         # if there are no image uploaded
         if not pic and len(pics) == 1 and 'application' in str(pics[0]):
-            flash('no pic uploaded', category='error')
+            flash('no file uploaded', category='error')
             return render_template("watermark-text.html", user=current_user)
         # if there are no text written
         if len(watermark_text) < 1:
@@ -171,7 +171,7 @@ def watermark_invisible():
 
         # if there are no image uploaded
         if not pic and len(pics) == 1 and 'application' in str(pics[0]):
-            flash('no pic uploaded', category='error')
+            flash('no file uploaded', category='error')
             return render_template("watermark-invisible.html", user=current_user)
         
         if pic:
@@ -185,8 +185,8 @@ def watermark_invisible():
             img = Imge(image=pic.read(), mimetype=mimetype, name=filename)
             watermarked_file = apply_watermark(pic, filename, "     ", "Arial.ttf", "center", "#fff", 'single', 1)
 
-            if filename.endswith(".jpg"):
-                prefix = filename.split(".jpg")[0]
+            if not filename.endswith(".png"):
+                prefix = filename.split(".")[0]
                 PNGfilename = prefix + ".png"
                 encode("website/static/image/" + PNGfilename, hidden_text,"website/static/image/" + PNGfilename, password)
 
@@ -209,8 +209,8 @@ def watermark_invisible():
                 
                 
                 #Encode invisible digital watermark into image with password same as text
-                if filename.endswith(".jpg"):
-                    prefix = filename.split(".jpg")[0]
+                if not filename.endswith(".png"):
+                    prefix = filename.split(".")[0]
                     PNGfilename = prefix + ".png"
                     encode("website/static/image-batch/" + PNGfilename, watermark_text,"website/static/image-batch/" + PNGfilename, watermark_text)
 

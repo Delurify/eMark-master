@@ -9,12 +9,13 @@
 }
 
 body{
-    background: #f3f5f9;
+    background-color: #D3D3D3;
 }
 
 .sidenav{
     margin-left: 200px;
 }
+
 
 .wrapper{
     display: flex;

@@ -11,8 +11,11 @@
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -24,11 +27,19 @@
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"/>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
     <script src="https://unpkg.com/konva@8.4.2/konva.min.js"></script>
-    
 
     <title>{% block title %}e-Mark{% endblock %}</title>
+
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='/asset/icon.png') }}"
+      type="image/x-icon"
+    />
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
@@ -44,7 +55,9 @@
         <div class="navbar-nav">
           {% if user.is_authenticated %}
           <a class="nav-item nav-link" id="home" href="/">Home</a>
-          <a class="nav-item nav-link" id="watermark" href="/watermark-text">Watermark</a>
+          <a class="nav-item nav-link" id="watermark" href="/watermark-text"
+            >Watermark</a
+          >
           <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
           {% else %}
           <a class="nav-item nav-link" id="login" href="/login">Login</a>
@@ -55,17 +68,22 @@
     </nav>
 
     {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %} 
-    {% for category, message in messages %} 
-    {% if category == 'error' %}
-    <div class="alert alert-danger alter-dismissable fade show sidenav" role="alert">
+    messages %} {% for category, message in messages %} {% if category ==
+    'error' %}
+    <div
+      class="alert alert-danger alter-dismissable fade show sidenav"
+      role="alert"
+    >
       {{ message }}
       <button type="button" class="close" data-dismiss="alert">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
     {% else %}
-    <div class="alert alert-success alter-dismissable fade show sidenav" role="alert">
+    <div
+      class="alert alert-success alter-dismissable fade show sidenav"
+      role="alert"
+    >
       {{ message }}
       <button type="button" class="close" data-dismiss="alert">
         <span aria-hidden="true">&times;</span>
