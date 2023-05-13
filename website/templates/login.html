@@ -1,9 +1,11 @@
-{%extends "base.html" %}
-{%block title %}Login{% endblock %}
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Poppins:wght@200;300;400;500;600;700&display=swap");
+</style>
+<link rel="stylesheet" href="/static/auth-style.css" />
+{%extends "base.html" %} {%block title %}Login{% endblock %} {% block content %}
 
 
-{% block content %}
-<form method="POST">
+<!-- <form method="POST">
     <h3 align="center">Login</h3>
     <div class="form-group">
         <label for="email">Email Address</label>
@@ -15,5 +17,27 @@
     </div>
     <br />
     <button type="submit" class="btn btn-primary">Login</button>
-</form>
+</form> -->
+
+<div class="center">
+  <h1>Login</h1>
+  <form method="POST">
+    <div class="txt_field">
+      <input type="email" id="email" name="email" required />
+      <span></span>
+      <label>Email Address</label>
+    </div>
+    <div class="txt_field">
+      <input type="password" id="password" name="password" required />
+      <span></span>
+      <label>Password</label>
+    </div>
+    <!-- <div class="remember">
+      <input type="checkbox" value="lsRememberMe" id="rememberMe" />
+      <label for="rememberMe" style="margin-left: 5px;">Remember me</label>
+    </div> -->
+    <button type="submit">Login</button>
+    <div class="signup_link">Not a member? <a href="/sign-up">Signup</a></div>
+  </form>
+</div>
 {% endblock %}
