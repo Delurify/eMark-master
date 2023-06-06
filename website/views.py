@@ -188,9 +188,11 @@ def watermark_invisible():
             if not filename.endswith(".png"):
                 prefix = filename.split(".")[0]
                 PNGfilename = prefix + ".png"
+                print("Encode without PNG filename " +PNGfilename)
                 encode("website/static/image/" + PNGfilename, hidden_text,"website/static/image/" + PNGfilename, password)
 
             else:
+                print("encode with PNG filename " + filename)
                 encode("website/static/image/" + filename, hidden_text,"website/static/image/" + filename, password)
 
             flash('Hidden message Encoded!', category='success')
@@ -198,10 +200,6 @@ def watermark_invisible():
 
         else:
             loop = 1
-            files = glob.glob("website/static/image-batch/*")
-            for f in files:
-                os.remove(f)
-            
             for img in pics:
                 filename = secure_filename(img.filename)
                 mimetype = img.mimetype
@@ -221,7 +219,7 @@ def watermark_invisible():
                 # db.session.add(Img)
                 # db.session.commit()
 
-        with zipfile.ZipFile('website/static/watermarked.zip','w', compression= zipfile.ZIP_DEFLATED) as zip:
+        with zipfile.ZipFile('website/static/zipfile/watermarked.zip','w', compression= zipfile.ZIP_DEFLATED) as zip:
             for img in pics:
                 filename = secure_filename(img.filename)
 
@@ -238,6 +236,9 @@ def watermark_invisible():
                 zip.write("website/static/image-batch/" + new_filename, basename("website/static/image-batch/" + new_filename))
 
         zip.close()
+        files = glob.glob("website/static/image-batch/*")
+        for f in files:
+            os.remove(f)
         flash('Hidden Text Encoded!', category='success')
         return render_template("watermark-invisible.html", user=current_user, image=Path(f"static/image-batch/" + new_filename), zipfile=Path(f"static/watermarked.zip"))
 
@@ -317,61 +318,66 @@ def apply_watermark(raw_image, name, watermark_text, fontType, placement, color,
 
     return filename
 
-# Image encryption: Steganography
+#Returns the encrypted/decrypted form of string depending upon mode input
 def encrypt_decrypt(string,password,mode='enc'):
-    _hash = md5(password.encode()).hexdigest() #get hash of password
-    cipher_key = urlsafe_b64encode(_hash.encode()) #use the hash as the key of encryption
-    cipher = Fernet(cipher_key) #get the cipher based on the cipher key
+    _hash = md5(password.encode()).hexdigest()
+    cipher_key = urlsafe_b64encode(_hash.encode())
+    cipher = Fernet(cipher_key)
     if mode == 'enc':
-        return cipher.encrypt(string.encode()).decode() #encrypt the data
+        return cipher.encrypt(string.encode()).decode()
     else:
-        return cipher.decrypt(string.encode()).decode() #decrypt the data
+        return cipher.decrypt(string.encode()).decode()
 
 
+#Returns binary representation of a string
 def str2bin(string):
-	return ''.join((bin(ord(i))[2:]).zfill(8) for i in string)
+    return ''.join((bin(ord(i))[2:]).zfill(7) for i in string)
 
-def encode(input_filepath,text,output_filepath,password=None):
+#Encodes secret data in image
+def encode(input_filepath,text,output_filepath,password=None,progressBar=None):
     if password != None:
         data = encrypt_decrypt(text,password,'enc') #If password is provided, encrypt the data with given password
     else:
-        data = text #else do not encrypt
-    data_length = bin(len(data))[2:].zfill(32) #get length of data to be encoded
-    bin_data = iter(data_length + str2bin(data)) #add length of data with actual data and get the binary form of whole thing
-    img = imread(input_filepath,1) #read the cover image
+        data = text
+    data_length = bin(len(data))[2:].zfill(32)
+    bin_data = iter(data_length + str2bin(data))
+    img = imread(input_filepath,1)
     if img is None:
-        flash('Please in', category='success')
-        raise FileError("The image file '{}' is inaccessible".format(input_filepath)) #if image is not accessible, raise an exception
-    height,width = img.shape[0],img.shape[1] #get height and width of cover image
-    encoding_capacity = height*width*3 #maximum number of bits of data that the cover image can hide
-    total_bits = 32+len(data)*8 #total bits in the data that needs to be hidden including 32 bits for specifying length of data
+        raise FileError("The image file '{}' is inaccessible".format(input_filepath))
+    height,width = img.shape[0],img.shape[1]
+    encoding_capacity = height*width*3
+    total_bits = 32+len(data)*7
     if total_bits > encoding_capacity:
-        raise DataError("The data size is too big to fit in this image!") #if cover image can't hide all the data, raise DataError exception
+        raise DataError("The data size is too big to fit in this image!")
     completed = False
     modified_bits = 0
-    
-    #Run 2 nested for loops to traverse all the pixels of the whole image in left to right, top to bottom fashion
+    progress = 0
+    progress_fraction = 1/total_bits
+        
     for i in range(height):
         for j in range(width):
-            pixel = img[i,j] #get the current pixel that is being traversed
-            for k in range(3): #get next 3 bits from the binary data that is to be encoded in image
+            pixel = img[i,j]
+            for k in range(3):
                 try:
                     x = next(bin_data)
-                except StopIteration: #if there is no data to encode, mark the encoding process as completed
+                except StopIteration:
                     completed = True
                     break
-                if x == '0' and pixel[k]%2==1: #if the bit to be encoded is '0' and the current LSB is '1'
-                    pixel[k] -= 1 #change LSB from 1 to 0
-                    modified_bits += 1 #increment the modified bits count
-                elif x=='1' and pixel[k]%2==0: #if the bit to be encoded is '1' and the current LSB is '0'
-                    pixel[k] += 1 #change LSB from 0 to 1
-                    modified_bits += 1 #increment the modified bits count
+                if x == '0' and pixel[k]%2==1:
+                    pixel[k] -= 1
+                    modified_bits += 1
+                elif x=='1' and pixel[k]%2==0:
+                    pixel[k] += 1
+                    modified_bits += 1
+                if progressBar != None: #If progress bar object is passed
+                    progress += progress_fraction
+                    progressBar.setValue(progress*100)
             if completed:
                 break
         if completed:
             break
 
-    written = imwrite(output_filepath,img) #create a new image with the modified pixels
+    written = imwrite(output_filepath,img)
     if not written:
         raise FileError("Failed to write image '{}'".format(output_filepath))
     
