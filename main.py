@@ -1,5 +1,6 @@
 import os
 import glob
+from flask import Flask
 from website import create_app
 from flask_apscheduler import APScheduler
 
