@@ -136,7 +136,7 @@ def watermark_text():
                     # db.session.add(Img)
                     # db.session.commit()
 
-        with zipfile.ZipFile('website/static/watermarked.zip','w', compression= zipfile.ZIP_DEFLATED) as zip:
+        with zipfile.ZipFile('website/static/zipfile/watermarked-'+ current_user.first_name + '.zip','w', compression= zipfile.ZIP_DEFLATED) as zip:
             for img in pics:
                 filename = secure_filename(img.filename)
 
@@ -154,7 +154,7 @@ def watermark_text():
 
         zip.close()
         flash('Digital Watermark embedded!', category='success')
-        return render_template("watermark-text.html", user=current_user, image=Path(f"static/image-batch/{watermarked_file}"), zipfile=Path(f"static/watermarked.zip"))
+        return render_template("watermark-text.html", user=current_user, image=Path(f"static/image-batch/{watermarked_file}"), zipfile=Path(f"static/zipfile/watermarked-"+ current_user.first_name +".zip"))
 
     return render_template("watermark-text.html", user=current_user)
 
@@ -200,6 +200,9 @@ def watermark_invisible():
 
         else:
             loop = 1
+            files = glob.glob("website/static/image-batch/*")
+            for f in files:
+                os.remove(f)
             for img in pics:
                 filename = secure_filename(img.filename)
                 mimetype = img.mimetype
@@ -219,7 +222,7 @@ def watermark_invisible():
                 # db.session.add(Img)
                 # db.session.commit()
 
-        with zipfile.ZipFile('website/static/zipfile/watermarked.zip','w', compression= zipfile.ZIP_DEFLATED) as zip:
+        with zipfile.ZipFile('website/static/zipfile/watermarked-'+ current_user.first_name + '.zip','w', compression= zipfile.ZIP_DEFLATED) as zip:
             for img in pics:
                 filename = secure_filename(img.filename)
 
@@ -236,11 +239,9 @@ def watermark_invisible():
                 zip.write("website/static/image-batch/" + new_filename, basename("website/static/image-batch/" + new_filename))
 
         zip.close()
-        files = glob.glob("website/static/image-batch/*")
-        for f in files:
-            os.remove(f)
+        
         flash('Hidden Text Encoded!', category='success')
-        return render_template("watermark-invisible.html", user=current_user, image=Path(f"static/image-batch/" + new_filename), zipfile=Path(f"static/watermarked.zip"))
+        return render_template("watermark-invisible.html", user=current_user, image=Path(f"static/image-batch/" + new_filename), zipfile=Path(f"static/zipfile/watermarked-"+ current_user.first_name +".zip"))
 
     return render_template("watermark-invisible.html", user=current_user)
 

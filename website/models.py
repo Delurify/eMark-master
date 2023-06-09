@@ -16,14 +16,6 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(150))
     notes = db.relationship('Note')
 
-# class Project(db.Model):
-#     certId = db.Column(db.Integer, primary_key=True)
-#     projName = db.Column(db.String(150), unique=True)
-#     data = db.Column(db.String(10000))
-#     canvas_image = db.Column(db.String)
-#     date = db.Column(db.DateTime(timezone=True), default=func.now())
-#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
 class Imge(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image = db.Column(db.Text, unique=True, nullable=False)
