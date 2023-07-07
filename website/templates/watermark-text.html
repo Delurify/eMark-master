@@ -57,6 +57,7 @@
                     id="watermark_text"
                     name="watermark_text"
                     placeholder="Enter text here."
+                    maxlength="30"
                     required
                   />
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -64,7 +65,7 @@
                     type="color"
                     id="colorpicker"
                     name="colorpicker"
-                    value="#ffffff"
+                    value="#000000"
                   />
                 </div>
                 <!-- left side control -->
@@ -195,20 +196,20 @@
               <img
                 src="{{ image }}"
                 alt="preview-img"
-                style="margin-left: 0.5cm"
+                style="margin-left: 1cm; width: fit-content"
               />
             </div>
             {% else %}
             <div
               class="preview-img"
               id="embedded"
-              style="margin-top: 20px; margin-right: 50px"
+              style="margin-top: 23px; margin-right: 50px"
               align="center"
             >
               <img
                 src="/static/asset/image-placeholder.svg"
                 alt="preview-img"
-                style="margin-left: 0.5cm"
+                style="margin-left: 1cm; width: fit-content"
               />
             </div>
             {% endif %}

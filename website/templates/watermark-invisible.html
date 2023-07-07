@@ -23,7 +23,7 @@ block content %}
       <li>
         <a href="/watermark-text"><i class="fas fa-solid fa-font"></i>Text</a>
       </li>
-      <li style="background: #594f8d">
+      <li style="background: #594f8d; ">
         <a href="/watermark-invisible"
           ><i class="fas fa-solid fa-eye-slash" ></i>Invisible</a
         >
@@ -41,7 +41,7 @@ block content %}
               <div
                 class="insert_text"
                 style="
-                  width: 335px;
+                  width: 369px;
                   padding: 5px 30px;
                   border: 1px solid #ccc;
                   border-radius: 5px;
@@ -63,7 +63,7 @@ block content %}
                   />
                 <br />
                 <br />
-
+                
                 <label
                   for="watermark_password"
                   class="text"
@@ -77,6 +77,10 @@ block content %}
                     placeholder="Enter password"
                     required
                   />
+                  <select name="password_type" id="password_type">
+                    <option value="all">To All</option>
+                    <option value="filename">By File Name</option>
+                  </select>
                 <!-- left side control -->
                 <div style="display: flex; flex-direction: column">
                     <div class="controls">
@@ -165,26 +169,26 @@ block content %}
             <div
               class="preview-img"
               id="embedded"
-              style="margin-top: 20px; margin-right: 50px"
+              style="margin-top: 45px; margin-right: 50px"
               align="center"
             >
               <img
                 src="{{ image }}"
                 alt="preview-img"
-                style="margin-left: 0.5cm"
+                style="width: fit-content;"
               />
             </div>
             {% else %}
             <div
               class="preview-img"
               id="embedded"
-              style="margin-top: 20px; margin-right: 50px"
+              style="margin-top: 45px; margin-right: 50px"
               align="center"
             >
               <img
                 src="/static/asset/image-placeholder.svg"
                 alt="preview-img"
-                style="margin-left: 0.5cm"
+                style="width: fit-content;"
               />
             </div>
             {% endif %}
@@ -194,5 +198,21 @@ block content %}
     </form>
   </div>
 </div>
+
+<script>
+  const passwordTypeSelect = document.getElementById('password_type');
+  const passwordField = document.getElementById('watermark_password');
+
+  passwordTypeSelect.addEventListener('change', function() {
+    if (passwordTypeSelect.value === 'filename') {
+      passwordField.value = '';
+      passwordField.disabled = true;
+      passwordField.placeholder = 'Automated';
+    } else {
+      passwordField.disabled = false;
+      passwordField.placeholder = 'Enter password';
+    }
+  });
+</script>
 
 {% endblock %}

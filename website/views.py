@@ -167,7 +167,9 @@ def watermark_invisible():
         pics = flask.request.files.getlist('image-batch[]')
             
         hidden_text = request.form.get('hidden_text')
-        password = request.form.get('watermark_password')
+        embed_type = request.form.get('password_type')
+        if embed_type == "all":
+            password = request.form.get('watermark_password')
 
         # if there are no image uploaded
         if not pic and len(pics) == 1 and 'application' in str(pics[0]):
@@ -187,13 +189,21 @@ def watermark_invisible():
 
             if not filename.endswith(".png"):
                 prefix = filename.split(".")[0]
+                print(prefix)
                 PNGfilename = prefix + ".png"
                 print("Encode without PNG filename " +PNGfilename)
-                encode("website/static/image/" + PNGfilename, hidden_text,"website/static/image/" + PNGfilename, password)
+                if embed_type == "all":
+                    encode("website/static/image/" + PNGfilename, hidden_text,"website/static/image/" + PNGfilename, password)
+                else:
+                    encode("website/static/image/" + PNGfilename, hidden_text,"website/static/image/" + PNGfilename, prefix)
 
             else:
+                prefix = filename.split(".")[0]
                 print("encode with PNG filename " + filename)
-                encode("website/static/image/" + filename, hidden_text,"website/static/image/" + filename, password)
+                if embed_type == "all":
+                    encode("website/static/image/" + filename, hidden_text,"website/static/image/" + filename, password)
+                else:
+                    encode("website/static/image/" + filename, hidden_text,"website/static/image/" + filename, prefix)
 
             flash('Hidden message Encoded!', category='success')
             return render_template("watermark-invisible.html", user=current_user, image=Path(f"static/image/{watermarked_file}"))
@@ -207,17 +217,25 @@ def watermark_invisible():
                 filename = secure_filename(img.filename)
                 mimetype = img.mimetype
 
-                imge = Imge(image=img.read(), mimetype=mimetype, name=filename)
                 watermarked_file = apply_watermark(img, filename, "     ", "Arial.ttf", "center", "#fff", 'batch', loop)
 
                 if not filename.endswith(".png"):
                     prefix = filename.split(".")[0]
+                    print(prefix)
                     PNGfilename = prefix + ".png"
-                    encode("website/static/image-batch/" + PNGfilename, hidden_text,"website/static/image-batch/" + PNGfilename, password)
+                    print("Encode without PNG filename " +PNGfilename)
+                    if embed_type == "all":
+                        encode("website/static/image-batch/" + PNGfilename, hidden_text,"website/static/image-batch/" + PNGfilename, password)
+                    else:
+                        encode("website/static/image-batch/" + PNGfilename, hidden_text,"website/static/image-batch/" + PNGfilename, prefix)
 
                 else:
-                    encode("website/static/image-batch/" + filename, hidden_text,"website/static/image-batch/" + filename, password)
-                    loop = loop + 1
+                    prefix = filename.split(".")[0]
+                    if embed_type == "all":
+                        encode("website/static/image-batch/" + filename, hidden_text,"website/static/image-batch/" + filename, password)
+                    else:
+                        encode("website/static/image-batch/" + filename, hidden_text,"website/static/image-batch/" + filename, prefix)
+                loop = loop + 1
                     
                 # db.session.add(Img)
                 # db.session.commit()
