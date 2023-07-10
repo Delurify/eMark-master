@@ -4,7 +4,7 @@ from pathlib import Path
 import glob
 from PIL import Image
 from PIL import ImageFont, ImageDraw, ImageColor
-from flask import Blueprint, Flask, render_template, flash, request, jsonify
+from flask import Blueprint, Flask, render_template, flash, request, jsonify, session
 import flask
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
@@ -88,18 +88,23 @@ def watermark_text():
         pics = flask.request.files.getlist('image-batch[]')
             
         watermark_text = request.form.get('watermark_text')
-        fontType = request.form.get('fontFamily') 
+        session['watermark_text'] = watermark_text
+
+        fontType = request.form.get('fontFamily')
+        session['fontFamily'] = fontType 
         placement = request.form.get('placement')
+        session['placement'] = placement
+
         color = request.form.get("colorpicker")
         
         # if there are no image uploaded
         if not pic and len(pics) == 1 and 'application' in str(pics[0]):
             flash('no file uploaded', category='error')
-            return render_template("watermark-text.html", user=current_user)
+            return render_template("watermark-text.html", user=current_user, watermark_text=session.get('watermark_text', ''),fontFamily=session.get('fontFamily', ''), placement=session.get('placement', ''))
         # if there are no text written
         if len(watermark_text) < 1:
             flash('no text entered', category='error')
-            return render_template("watermark-text.html", user=current_user)
+            return render_template("watermark-text.html", user=current_user, watermark_text=session.get('watermark_text', ''),fontFamily=session.get('fontFamily', ''), placement=session.get('placement', ''))
         
         if pic:
             filename = secure_filename(pic.filename)
@@ -113,7 +118,7 @@ def watermark_text():
             watermarked_file = apply_watermark(pic, filename, watermark_text, fontType, placement, color, 'single', 1)
 
             flash('Digital Watermark embedded!', category='success')
-            return render_template("watermark-text.html", user=current_user, image=Path(f"static/image/{watermarked_file}"))
+            return render_template("watermark-text.html", user=current_user, image=Path(f"static/image/{watermarked_file}"), watermark_text=session.get('watermark_text', ''), fontFamily=session.get('fontFamily', ''), placement=session.get('placement', ''))
 
         else:
             loop = 1
@@ -154,7 +159,8 @@ def watermark_text():
 
         zip.close()
         flash('Digital Watermark embedded!', category='success')
-        return render_template("watermark-text.html", user=current_user, image=Path(f"static/image-batch/{watermarked_file}"), zipfile=Path(f"static/zipfile/watermarked-"+ current_user.first_name +".zip"))
+
+        return render_template("watermark-text.html", user=current_user, image=Path(f"static/image-batch/{watermarked_file}"), zipfile=Path(f"static/zipfile/watermarked-"+ current_user.first_name +".zip"), watermark_text=session.get('watermark_text', ''),fontFamily=session.get('fontFamily', ''), placement=session.get('placement', ''))
 
     return render_template("watermark-text.html", user=current_user)
 
@@ -167,6 +173,7 @@ def watermark_invisible():
         pics = flask.request.files.getlist('image-batch[]')
             
         hidden_text = request.form.get('hidden_text')
+        session['hidden_text'] = hidden_text
         embed_type = request.form.get('password_type')
         if embed_type == "all":
             password = request.form.get('watermark_password')
@@ -174,7 +181,7 @@ def watermark_invisible():
         # if there are no image uploaded
         if not pic and len(pics) == 1 and 'application' in str(pics[0]):
             flash('no file uploaded', category='error')
-            return render_template("watermark-invisible.html", user=current_user)
+            return render_template("watermark-invisible.html", user=current_user, hidden_text=session.get('hidden_text', ''))
         
         if pic:
             filename = secure_filename(pic.filename)
@@ -206,7 +213,7 @@ def watermark_invisible():
                     encode("website/static/image/" + filename, hidden_text,"website/static/image/" + filename, prefix)
 
             flash('Hidden message Encoded!', category='success')
-            return render_template("watermark-invisible.html", user=current_user, image=Path(f"static/image/{watermarked_file}"))
+            return render_template("watermark-invisible.html", user=current_user, image=Path(f"static/image/{watermarked_file}"), hidden_text=session.get('hidden_text', ''))
 
         else:
             loop = 1
@@ -259,9 +266,9 @@ def watermark_invisible():
         zip.close()
         
         flash('Hidden Text Encoded!', category='success')
-        return render_template("watermark-invisible.html", user=current_user, image=Path(f"static/image-batch/" + new_filename), zipfile=Path(f"static/zipfile/watermarked-"+ current_user.first_name +".zip"))
+        return render_template("watermark-invisible.html", user=current_user, image=Path(f"static/image-batch/" + new_filename), zipfile=Path(f"static/zipfile/watermarked-"+ current_user.first_name +".zip"), hidden_text=session.get('hidden_text', ''))
 
-    return render_template("watermark-invisible.html", user=current_user)
+    return render_template("watermark-invisible.html", user=current_user, hidden_text=session.get('hidden_text', ''))
 
 # Apply watermark
 fontSize = 1

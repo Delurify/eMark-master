@@ -10,7 +10,8 @@
   crossorigin="anonymous"
 ></script>
 
-{%extends "base.html" %} {%block title %}e-Mark - Watermark{% endblock %} {% block content %}
+{%extends "base.html" %} {%block title %}e-Mark - Watermark{% endblock %} {%
+block content %}
 <!-- <h1 align="center">Watermark</h1> -->
 <br />
 <br />
@@ -22,8 +23,10 @@
       <li style="background: #594f8d">
         <a href="/watermark-text"><i class="fas fa-solid fa-font"></i>Text</a>
       </li>
-      <li >
-        <a href="/watermark-invisible"><i class="fas fa-solid fa-eye-slash"></i>Invisible</a>
+      <li>
+        <a href="/watermark-invisible"
+          ><i class="fas fa-solid fa-eye-slash"></i>Invisible</a
+        >
       </li>
     </ul>
   </div>
@@ -58,8 +61,10 @@
                     name="watermark_text"
                     placeholder="Enter text here."
                     maxlength="30"
+                    value="{{ watermark_text }}"
                     required
                   />
+
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                   <input
                     type="color"
@@ -73,33 +78,23 @@
                   <br />
                   <!-- column 1 -->
                   <div id="edit_option">
-                    <select
-                      id="fontFamily"
-                      name="fontFamily"
-                      style="width: 5cm; margin-bottom: 10px"
-                    >
-                      <option value="Arial.ttf">Arial</option>
-                      <option value="Calibri.ttf">Calibri</option>
-                      <option value="futur.ttf">Futura</option>
-                      <option value="Garamond.ttf">Garamond</option>
-                      <option value="Helvetica.ttf">Helvetica</option>
-                      <option value="times-new-roman.ttf">
-                        Times New Roman
-                      </option>
+                    <select id="fontFamily" name="fontFamily" style="width: 5cm; margin-bottom: 10px">
+                      <option value="Arial.ttf" {% if fontFamily == 'Arial.ttf' %}selected{% endif %}>Arial</option>
+                      <option value="Calibri.ttf" {% if fontFamily == 'Calibri.ttf' %}selected{% endif %}>Calibri</option>
+                      <option value="futur.ttf" {% if fontFamily == 'futur.ttf' %}selected{% endif %}>Futura</option>
+                      <option value="Garamond.ttf" {% if fontFamily == 'Garamond.ttf' %}selected{% endif %}>Garamond</option>
+                      <option value="Helvetica.ttf" {% if fontFamily == 'Helvetica.ttf' %}selected{% endif %}>Helvetica</option>
+                      <option value="times-new-roman.ttf" {% if fontFamily == 'times-new-roman.ttf' %}selected{% endif %}>Times New Roman</option>
                     </select>
                   </div>
                   <!-- column 2 -->
                   <div class="edit_option2">
-                    <select
-                      id="placement"
-                      name="placement"
-                      style="width: 5cm; margin-bottom: 10px"
-                    >
-                      <option value="center">Center</option>
-                      <option value="top-left">Top-Left</option>
-                      <option value="top-right">Top-Right</option>
-                      <option value="bottom-left">Bottom Left</option>
-                      <option value="bottom-right">Bottom Right</option>
+                    <select id="placement" name="placement" style="width: 5cm; margin-bottom: 10px">
+                      <option value="center" {% if placement == 'center' %}selected{% endif %}>Center</option>
+                      <option value="top-left" {% if placement == 'top-left' %}selected{% endif %}>Top-Left</option>
+                      <option value="top-right" {% if placement == 'top-right' %}selected{% endif %}>Top-Right</option>
+                      <option value="bottom-left" {% if placement == 'bottom-left' %}selected{% endif %}>Bottom Left</option>
+                      <option value="bottom-right" {% if placement == 'bottom-right' %}selected{% endif %}>Bottom Right</option>
                     </select>
 
                     <br />
